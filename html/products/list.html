@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Go final project</title>
+  </head>
+  <body>
+    <h3>Go final project</h3>
+    <a href="/categories">Category list</a>
+    <a href="/products/create">Create</a>
+    <h3>Products</h3>
+    <table>
+      <tr>
+        <th>Category</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+      {{ $cs := .Categories }}
+      {{ range $p := .Products }}
+        <tr>
+          <td>{{ with $c := index $cs $p.Category }}{{ $c.Name }}{{ end }}</td>
+          <td>{{ $p.Name }}</td>
+          <td>{{ $p.Price }}</td>
+          <td>
+            <a href="/products/{{ $p.Id }}/edit">Edit</a>
+            <a href="#" onclick="deleteProduct({{ $p.Id }}, '{{ $p.Name }}')">Delete</a>
+            <form id="delete-product-from-{{ $p.Id }}" action="/products/{{ $p.Id }}" method="post">
+              <input type="hidden" name="_method" value="DELETE">
+            </form>
+          </td>
+        </tr>
+      {{ end }}
+    </table>
+    <script>
+      function deleteProduct(id, name) {
+        if (confirm("Are you sure you want to delete product " + name + "?")) {
+          document.getElementById("delete-product-from-" + id).submit()
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Go final project</title>
+  </head>
+  <body>
+    <h3>Go final project</h3>
+    <a href="/products">Product list</a>
+    <a href="/categories/create">Create</a>
+    <h3>Categories</h3>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Action</th>
+      </tr>
+      {{ range . }}
+        <tr>
+          <td>{{ .Name }}</td>
+          <td>
+            <a href="/categories/{{ .Id }}/edit">Edit</a>
+            <a href="#" onclick="deleteCategory({{ .Id }}, '{{ .Name }}')">Delete</a>
+            <form id="delete-category-from-{{ .Id }}" action="/categories/{{ .Id }}" method="post">
+              <input type="hidden" name="_method" value="DELETE">
+            </form>
+          </td>
+        </tr>
+      {{ end }}
+    </table>
+    <script>
+      function deleteCategory(id, name) {
+        if (confirm("Are you sure you want to delete category " + name + "?")) {
+          document.getElementById("delete-category-from-" + id).submit()
+        }
+      }
+    </script>
+  </body>
+</html>

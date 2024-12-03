@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Go final project</title>
+  </head>
+  <body>
+    <h3>Go final project</h3>
+    <a href="/products">Back</a>
+    <h3>Create Product</h3>
+    <form action="/products" method="post">
+      <label for="">Category</label>
+      <a href="/categories/create">Create</a>
+      <select name="category">
+        {{ range $c := .Category }}
+          <option value="{{ $c.Id }}"
+          {{ if $c.Id == .Old.Category }}
+            selected
+          {{ end }}
+          >{{ $c.Name }}</option>
+        {{ end }}
+      </select>
+      <label for="">Name</label>
+      <input value="{{ .Old.Name }}" type="text" placeholder="Name" name="name">
+      {{ with .Errors.Name }}
+        <p class="error"{{ . }}</p>
+      {{ end }}
+      <label for="">Price</label>
+      <input value="{{ .Old.Price }}" type="text" placeholder="Price" name="price">
+      {{ with .Errors.Price }}
+        <p class="error"{{ . }}</p>
+      {{ end }}
+      <label for="">Description</label>
+      <textarea placeholder="Description" name="description" cols="30" rows="5">{{ .Old.Description }}</textarea>
+      <button>Submit</button>
+    </form>
+  </body>
+</html>
