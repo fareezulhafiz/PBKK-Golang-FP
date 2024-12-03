@@ -1,38 +1,183 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Go final project</title>
-  </head>
-  <body>
-    <h3>Go final project</h3>
-    <a href="/products">Back</a>
-    <h3>Create Product</h3>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product</title>
+  <!-- Link to Google Fonts for Roboto -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #adc3d1; /* Background color */
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .header h3 {
+      font-size: 32px; /* Increased text size */
+      font-family: 'Roboto', sans-serif;
+      font-weight: bold;
+      color: #001c44;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    select, input[type="text"], textarea {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    select:focus, input[type="text"]:focus, textarea:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button, .btn-back {
+      flex: 1; /* Ensures both buttons have equal width */
+      padding: 8px 12px;  /* Reduced padding to make buttons shorter */
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin: 5px;
+      color: white; /* Set text color to white */
+      text-align: center;
+      text-decoration: none;
+      line-height: 30px; /* Adjust line height for alignment */
+    }
+
+    .back-button {
+      background-color: #094956; /* Back button color */
+    }
+
+    .back-button:hover {
+      background-color: #073c44;
+    }
+
+    .submit-button {
+      background-color: #2d99ae; /* Submit button color */
+    }
+
+    .submit-button:hover {
+      background-color: #258e94;
+    }
+
+    .create-category-button {
+      background-color: #0C5776; /* Create category button color */
+      font-size: 14px;  /* Smaller font size */
+      padding: 8px 12px; /* Smaller padding */
+      margin-left: 10px;
+      height: auto;  /* Ensure it's not too tall */
+      margin-top: -13px; /* Adjusted to slightly raise the button */
+      width: auto; /* Allow the width to adjust based on content */
+      max-width: 150px; /* Set maximum width to control button size */
+      text-align: center; /* Center align text */
+    }
+
+    .create-category-button:hover {
+      background-color: #073c44;
+    }
+
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    /* Increase dropdown length */
+    select {
+      max-height: 300px; /* Increased dropdown list length */
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    /* Flexbox for the dropdown and button */
+    .select-container {
+      display: flex;
+      align-items: center;  /* Align both elements vertically */
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h3>Edit Product</h3>
+    </div>
     <form action="/products/{{ .Id }}" method="post">
-      <label for="">Category</label>
-      <a href="/categories/create">Create</a>
-      <select name="category">
-        {{ range $c := .Category }}
-          <option value="{{ $c.Id }}"
-          {{ if $c.Id == .Old.Category }}
-            selected
+      <label for="category">Category</label>
+      <div class="select-container">
+        <select name="category" id="category">
+          {{ range $c := .Category }}
+            <option value="{{ $c.Id }}"
+              {{ if $c.Id == .Old.Category }}
+                selected
+              {{ end }}
+            >{{ $c.Name }}</option>
           {{ end }}
-          >{{ $c.Name }}</option>
-        {{ end }}
-      </select>
-      <label for="">Name</label>
-      <input value="{{ .Old.Name }}" type="text" placeholder="Name" name="name">
+        </select>
+        <button type="button" class="create-category-button" onclick="window.location.href='/categories/create'">Create Category</button>
+      </div>
+
+      <label for="name">Name</label>
+      <input value="{{ .Old.Name }}" type="text" placeholder="Name" name="name" id="name">
       {{ with .Errors.Name }}
-        <p class="error"{{ . }}</p>
+        <p class="error">{{ . }}</p>
       {{ end }}
-      <label for="">Price</label>
-      <input value="{{ .Old.Price }}" type="text" placeholder="Price" name="price">
+
+      <label for="price">Price</label>
+      <input value="{{ .Old.Price }}" type="text" placeholder="Price" name="price" id="price">
       {{ with .Errors.Price }}
-        <p class="error"{{ . }}</p>
+        <p class="error">{{ . }}</p>
       {{ end }}
-      <label for="">Description</label>
-      <textarea placeholder="Description" name="description" cols="30" rows="5">{{ .Old.Description }}</textarea>
+
+      <label for="description">Description</label>
+      <textarea placeholder="Description" name="description" id="description" cols="30" rows="5">{{ .Old.Description }}</textarea>
+
       <input type="hidden" name="_method" value="PUT">
-      <button>Submit</button>
+      <div class="button-container">
+        <a href="/products" class="back-button btn-back">Back</a>
+        <button type="submit" class="submit-button">Submit</button>
+      </div>
     </form>
-  </body>
+  </div>
+
+</body>
 </html>

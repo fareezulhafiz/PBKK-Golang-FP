@@ -1,42 +1,181 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Go final project</title>
-  </head>
-  <body>
-    <h3>Go final project</h3>
-    <a href="/categories">Category list</a>
-    <a href="/products/create">Create</a>
-    <h3>Products</h3>
-    <table>
-      <tr>
-        <th>Category</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Action</th>
-      </tr>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products</title>
+  <!-- Link to Google Fonts for Roboto -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #adc3d1; /* Background color */
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header h3 {
+      font-size: 32px; /* Increased text size */
+      font-family: 'Roboto', sans-serif;
+      font-weight: bold;
+      color: #001c44;
+    }
+
+    .header a {
+      text-decoration: none;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-category-list {
+      background-color: #0C5776; /* Category list button color */
+    }
+
+    .btn-category-list:hover {
+      background-color: #094956;
+    }
+
+    .btn-create {
+      background-color: #2d99ae; /* Create button color */
+    }
+
+    .btn-create:hover {
+      background-color: #258e94;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-header {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .card-content {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-footer a {
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: white;
+      margin-right: 5px;
+      display: inline-block;
+      flex: 1;
+      text-align: center;
+    }
+
+    .edit-link {
+      background-color: #094956; /* Edit button color */
+    }
+
+    .edit-link:hover {
+      background-color: #083e4a;
+    }
+
+    .delete-link {
+      background-color: #2d99ae; /* Delete button color */
+    }
+
+    .delete-link:hover {
+      background-color: #258e94;
+    }
+
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h3>Products</h3>
+      <div>
+        <a href="/categories" class="btn btn-category-list">Category List</a>
+        <a href="/products/create" class="btn btn-create">Create</a>
+      </div>
+    </div>
+    <div class="card-grid">
       {{ $cs := .Categories }}
       {{ range $p := .Products }}
-        <tr>
-          <td>{{ with $c := index $cs $p.Category }}{{ $c.Name }}{{ end }}</td>
-          <td>{{ $p.Name }}</td>
-          <td>{{ $p.Price }}</td>
-          <td>
-            <a href="/products/{{ $p.Id }}/edit">Edit</a>
-            <a href="#" onclick="deleteProduct({{ $p.Id }}, '{{ $p.Name }}')">Delete</a>
-            <form id="delete-product-from-{{ $p.Id }}" action="/products/{{ $p.Id }}" method="post">
+        <div class="card">
+          <div class="card-header">{{ $p.Name }}</div>
+          <div class="card-content">
+            <p><strong>Category:</strong> {{ with $c := index $cs $p.Category }}{{ $c.Name }}{{ end }}</p>
+            <p><strong>Price:</strong> ${{ $p.Price }}</p>
+          </div>
+          <div class="card-footer">
+            <a href="/products/{{ $p.Id }}/edit" class="edit-link">Edit</a>
+            <a href="#" class="delete-link" onclick="deleteProduct({{ $p.Id }}, '{{ $p.Name }}')">Delete</a>
+            <form id="delete-product-form-{{ $p.Id }}" action="/products/{{ $p.Id }}" method="post" style="display: none;">
               <input type="hidden" name="_method" value="DELETE">
             </form>
-          </td>
-        </tr>
+          </div>
+        </div>
       {{ end }}
-    </table>
-    <script>
-      function deleteProduct(id, name) {
-        if (confirm("Are you sure you want to delete product " + name + "?")) {
-          document.getElementById("delete-product-from-" + id).submit()
-        }
+    </div>
+  </div>
+
+  <script>
+    function deleteProduct(id, name) {
+      if (confirm("Are you sure you want to delete product " + name + "?")) {
+        document.getElementById("delete-product-form-" + id).submit();
       }
-    </script>
-  </body>
+    }
+  </script>
+
+</body>
 </html>

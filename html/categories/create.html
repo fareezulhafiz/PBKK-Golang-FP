@@ -1,20 +1,136 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Go final project</title>
-  </head>
-  <body>
-    <h3>Go final project</h3>
-    <a href="/categories">Back</a>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Category</title>
+  <!-- Link to Google Fonts for Roboto -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #adc3d1; /* Background color */
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    header {
+      background-color: #001c44; /* Header background color */
+      padding: 20px;
+      text-align: center;
+      border-radius: 8px 8px 0 0; /* Rounded top corners */
+    }
+
+    h3 {
+      color: white; /* Title color */
+      font-size: 36px; /* Increased text size */
+      font-family: 'Roboto', sans-serif;
+      font-weight: bold; /* Set to bold */
+      margin: 0;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+    }
+
+    label {
+      font-size: 18px; /* Increased font size for labels */
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"], textarea {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus, textarea:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    button {
+      flex: 1; /* Ensures both buttons have equal width */
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin: 5px;
+      color: white; /* Set text color to white */
+    }
+
+    .back-button {
+      background-color: #0C5776; /* Back button color */
+    }
+
+    .back-button:hover {
+      background-color: #094956;
+    }
+
+    .submit-button {
+      background-color: #2d99ae; /* Submit button color */
+    }
+
+    .submit-button:hover {
+      background-color: #258e94;
+    }
+
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header with the title -->
+    <header>
+      <h3>Create New Category</h3>
+    </header>
+    
     <form action="/categories" method="post">
-      <label for="">Name</label>
-      <input value="{{ .name }}" type="text" placeholder="Name" name="name">
+      <label for="name">Name</label>
+      <input value="{{ .name }}" type="text" placeholder="Category Name" name="name" id="name" required>
+
       {{ with .Errors.Name }}
-        <p class="error"{{ . }}</p>
+        <p class="error">{{ . }}</p>
       {{ end }}
-      <label for="">Description</label>
-      <textarea placeholder="Description" name="description" cols="30" rows="5">{{ .description }}</textarea>
-      <button>Submit</button>
+
+      <label for="description">Description</label>
+      <textarea placeholder="Category Description" name="description" id="description" cols="30" rows="5">{{ .description }}</textarea>
+
+      <div class="button-container">
+        <button type="button" class="back-button" onclick="window.location.href='/categories'">Back</button>
+        <button type="submit" class="submit-button">Submit</button>
+      </div>
     </form>
-  </body>
+  </div>
+
+</body>
 </html>
