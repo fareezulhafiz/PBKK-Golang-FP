@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Category</title>
+  <!-- Link to Google Fonts for Roboto -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #adc3d1; /* Background color */
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header h3 {
+      font-size: 32px; /* Increased text size */
+      font-family: 'Roboto', sans-serif;
+      font-weight: bold;
+      color: #001c44;
+    }
+
+    .header a {
+      text-decoration: none;
+      color: #094956;
+      font-size: 18px;
+    }
+
+    .category-details {
+      font-size: 18px;
+      color: #333;
+      margin-top: 20px;
+    }
+
+    .category-details dt {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .category-details dd {
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+      text-decoration: none;
+    }
+
+    .btn-back {
+      background-color: #2d99ae; /* Back button color */
+    }
+
+    .btn-back:hover {
+      background-color: #258e94;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h3>Category Details</h3>
+      <a href="/categories" class="btn btn-back">Back to Categories</a>
+    </div>
+    <dl class="category-details">
+      <dt>Name:</dt>
+      <dd>{{ .Name }}</dd>
+    </dl>
+  </div>
+</body>
+</html>

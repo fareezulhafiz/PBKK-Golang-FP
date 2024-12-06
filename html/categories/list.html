@@ -154,6 +154,7 @@
         <tr>
           <td>{{ .Name }}</td>
           <td>
+            <a href="/categories/{{ .Id }}" class="action-link edit-link">View</a>
             <a href="/categories/{{ .Id }}/edit" class="action-link edit-link">Edit</a>
             <a href="#" class="action-link delete-link" onclick="deleteCategory({{ .Id }}, '{{ .Name }}')">Delete</a>
             <form id="delete-category-form-{{ .Id }}" action="/categories/{{ .Id }}" method="post" style="display: none;">
