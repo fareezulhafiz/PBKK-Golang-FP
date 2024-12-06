@@ -1,9 +1,9 @@
 package main
 
 import (
-    "fmt"
     "net/http"
     "strconv"
+    "fmt"
 )
 
 type Category struct {
@@ -11,10 +11,10 @@ type Category struct {
     Name        string
     Description string
 }
-func (c Category) toString() string {
-    return fmt.Sprintf("DEFAULT, '%s', '%s'", c.Name, c.Description)
+func (Category) tableName() string {
+    return "categories"
 }
-func (c Category) parseForm(r *http.Request) bool {
+func (c *Category) parseForm(r *http.Request) bool {
     if c.Name = r.FormValue("name"); len(c.Name) < 3 || len(c.Name) > 255 {
         return false
     }
@@ -29,11 +29,10 @@ type Product struct {
     Price       int
     Description string
 }
-func (p Product) toString() string {
-    return fmt.Sprintf("DEFAULT, %d, '%s', %d, '%s'",
-        p.Category, p.Name, p.Price, p.Description)
+func (Product) tableName() string {
+    return "products"
 }
-func (p Product) parseForm(r *http.Request) bool {
+func (p *Product) parseForm(r *http.Request) bool {
     var err error
 
     if p.Category, err = strconv.Atoi(r.FormValue("category")); err != nil {
@@ -50,41 +49,33 @@ func (p Product) parseForm(r *http.Request) bool {
 }
 
 func category_migrate() {
-    db_create("categories", []string{
-        "id          serial       PRIMARY KEY",
-        "name        varchar(255) NOT NULL",
-        "description text         NOT NULL"})
+    db_create(Category{}, []string{
+        "id serial PRIMARY KEY",
+        "name varchar(255) NOT NULL",
+        "description text NOT NULL"})
 }
 
 func category_drop() {
-    db_drop("categories")
+    db_drop(Category{})
 }
 
 func category_get() []Category {
-    return db_get("categories", Category{})
-}
-
-func category_get_by_id(id int) Category {
-    return db_get_by_id("categories", Category{}, id)
+    return db_get(Category{})
 }
 
 func product_migrate() {
-    db_create("products", []string{
-        "id          serial       PRIMARY KEY",
-        "category    int          NOT NULL REFERENCES categories(id)",
-        "name        varchar(255) NOT NULL",
-        "price       int          NOT NULL",
-        "description text         NOT NULL"})
+    db_create(Product{}, []string{
+        "id serial PRIMARY KEY",
+        "category int NOT NULL REFERENCES " + Category{}.tableName() + "(id)",
+        "name varchar(255) NOT NULL",
+        "price int NOT NULL",
+        "description text NOT NULL"})
 }
 
 func product_drop() {
-    db_drop("products")
+    db_drop(Product{})
 }
 
 func product_get() []Product {
-    return db_get("products", Product{})
-}
-
-func product_get_by_id(id int) Product {
-    return db_get_by_id("products", Product{}, id)
+    return db_get(Product{})
 }

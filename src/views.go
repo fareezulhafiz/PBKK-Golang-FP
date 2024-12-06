@@ -1,7 +1,6 @@
 package main
 
 import (
-    "fmt"
     "html/template"
     "net/http"
 )
@@ -15,108 +14,115 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func generic_index(w http.ResponseWriter, r *http.Request, p string, s any) {
-    tmpl, err := template.ParseFiles("html/" + p + "/list.html")
+// TODO form error + success
+func generic_index(w http.ResponseWriter, r *http.Request, t Model, s any) {
+    tmpl, err := template.ParseFiles("html/" + t.tableName() + "/list.html")
 
     if err != nil {
         http.Error(w, "500 internal server error",
             http.StatusInternalServerError)
-        fmt.Println(err)
         return
     }
-    fmt.Println(tmpl.Execute(w, s))
+    tmpl.Execute(w, s)
 }
 
 func category_index(w http.ResponseWriter, r *http.Request) {
-    generic_index(w, r, "categories", category_get())
+    generic_index(w, r, Category{}, category_get())
 }
 
 func product_index(w http.ResponseWriter, r *http.Request) {
-    fmt.Println(append([]Category{{}}, category_get()...))
-    generic_index(w, r, "products", struct {
+    generic_index(w, r, Product{}, struct {
         Products []Product
         Categories []Category
-    } {product_get(), append([]Category{}, category_get()...)})
+    } {product_get(), append([]Category{{}}, category_get()...)})
 }
 
 
-func generic_edit(w http.ResponseWriter, r *http.Request, p string) {
-    //id := get_param(r, 0)
-    //old := r.PostForm
+func generic_edit(w http.ResponseWriter, r *http.Request, t Model) {
+    old := db_get_by_id(t, get_param(r, 0))
 
-    http.Error(w, "501 not implemented", http.StatusNotImplemented)
-    //http.Redirect("/categories")
-}
-
-func category_edit(w http.ResponseWriter, r *http.Request) {
-    generic_edit(w, r, "categories")
-}
-
-func product_edit(w http.ResponseWriter, r *http.Request) {
-    generic_edit(w, r, "products")
-}
-
-
-func generic_create(w http.ResponseWriter, r *http.Request, p string) {
-    old := r.PostForm
-
-    tmpl, err := template.ParseFiles("html/" + p + "/create.html")
+    tmpl, err := template.ParseFiles("html/" + t.tableName() + "/edit.html")
     if err != nil {
         http.Error(w, "500 internal server error",
             http.StatusInternalServerError)
-        fmt.Println(err)
+        return
+    }
+    tmpl.Execute(w, old)
+}
+
+func category_edit(w http.ResponseWriter, r *http.Request) {
+    generic_edit(w, r, Category{})
+}
+
+func product_edit(w http.ResponseWriter, r *http.Request) {
+    generic_edit(w, r, Product{})
+}
+
+
+func generic_create(w http.ResponseWriter, r *http.Request, t Model) {
+    old := r.PostForm
+
+    tmpl, err := template.ParseFiles("html/" + t.tableName() + "/create.html")
+    if err != nil {
+        http.Error(w, "500 internal server error",
+            http.StatusInternalServerError)
         return
     }
     tmpl.Execute(w, old)
 }
 
 func category_create(w http.ResponseWriter, r *http.Request) {
-    generic_create(w, r, "categories")
+    generic_create(w, r, Category{})
 }
 
 func product_create(w http.ResponseWriter, r *http.Request) {
-    generic_create(w, r, "products")
+    generic_create(w, r, Product{})
 }
 
 
-func generic_store(w http.ResponseWriter, r *http.Request, t Model, p string) {
+func generic_store(w http.ResponseWriter, r *http.Request, t Model) {
     r.ParseForm()
     if t.parseForm(r) {
-        db_store(p, t)
-        http.Redirect(w, r, "/" + p , http.StatusSeeOther)
+        db_store(t)
+        http.Redirect(w, r, "/" + t.tableName(), http.StatusSeeOther)
     }
 }
 
 func category_store(w http.ResponseWriter, r *http.Request) {
-    generic_store(w, r, Category{}, "categories")
+    generic_store(w, r, Category{})
 }
 
 func product_store(w http.ResponseWriter, r *http.Request) {
-    generic_store(w, r, Product{}, "products")
+    generic_store(w, r, Product{})
 }
 
 
-func generic_update(w http.ResponseWriter, r *http.Request, p string) {
-    http.Error(w, "501 not implemented", http.StatusNotImplemented)
+func generic_update(w http.ResponseWriter, r *http.Request, t Model) {
+    r.ParseForm()
+    if t.parseForm(r) {
+        db_update(t, get_param(r, 0))
+        http.Redirect(w, r, "/" + t.tableName(), http.StatusSeeOther)
+    }
 }
 
 func category_update(w http.ResponseWriter, r *http.Request) {
-    generic_update(w, r, "categories")
+    generic_update(w, r, Category{})
 }
 
 func product_update(w http.ResponseWriter, r *http.Request) {
-    generic_update(w, r, "products")
+    generic_update(w, r, Product{})
 }
 
 
-func generic_delete(w http.ResponseWriter, r *http.Request, p string) {
-    http.Error(w, "501 not implemented", http.StatusNotImplemented)
+func generic_delete(w http.ResponseWriter, r *http.Request, t Model) {
+    db_delete(t, get_param(r, 0))
+    http.Redirect(w, r, "/" + t.tableName(), http.StatusSeeOther)
 }
 
 func category_delete(w http.ResponseWriter, r *http.Request) {
-    generic_delete(w, r, "categories")
+    generic_delete(w, r, Category{})
 }
 
 func product_delete(w http.ResponseWriter, r *http.Request) {
-    generic_delete(w, r, "products")
+    generic_delete(w, r, Product{})
 }
