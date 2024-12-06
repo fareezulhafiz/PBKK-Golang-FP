@@ -126,16 +126,16 @@ func product_delete(w http.ResponseWriter, r *http.Request) {
     generic_delete(w, r, Product{})
 }
 
-func generic_view(w http.ResponseWriter, r *http.Request, t Model) {
-    old := db_get_by_id(t, get_param(r, 0))
 
+func generic_view[T Model](w http.ResponseWriter, r *http.Request, t T) {
+    t = db_get_by_id(t, get_param(r, 0))
     tmpl, err := template.ParseFiles("html/" + t.tableName() + "/view.html")
     if err != nil {
         http.Error(w, "500 internal server error",
             http.StatusInternalServerError)
         return
     }
-    tmpl.Execute(w, old)
+    tmpl.Execute(w, t)
 }
 
 func category_view(w http.ResponseWriter, r *http.Request) {

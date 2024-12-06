@@ -32,6 +32,7 @@ var routes = []Route{
     {"GET",    regexp.MustCompile("^/products/create/?$"), product_create},
     {"POST",   regexp.MustCompile("^/products/?$"), product_store},
     {"PUT",    regexp.MustCompile("^/products/([0-9]+)/?$"), product_update},
+    {"GET",    regexp.MustCompile("^/products/([0-9]+)/?$"), product_view},
     {"DELETE", regexp.MustCompile("^/products/([0-9]+)/?$"), product_delete},
 }
 

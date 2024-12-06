@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Category Details</title>
+  <title>Product Details</title>
   <!-- Link to Google Fonts for Roboto -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
 
@@ -96,7 +96,7 @@
 
   <div class="container">
     <div class="header">
-      <h3>Category Details</h3>
+      <h3>Product Details</h3>
     </div>
     <div class="card">
       <dl class="category-details">
@@ -104,11 +104,19 @@
         <dd>{{ .Name }}</dd>
       </dl>
       <dl class="category-details">
+        <dt>Category:</dt>
+        <dd>{{ .Category }}</dd>
+      </dl>
+      <dl class="category-details">
+        <dt>Price:</dt>
+        <dd>${{ .Price }}</dd>
+      </dl>
+      <dl class="category-details">
         <dt>Description:</dt>
         <dd>{{ .Description }}</dd>
       </dl>
       <div class="btn-container">
-        <a href="/categories" class="btn-back">Back to Categories</a>
+        <a href="/products" class="btn-back">Back to Products</a>
       </div>
     </div>
   </div>

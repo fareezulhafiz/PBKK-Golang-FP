@@ -158,6 +158,7 @@
             <p><strong>Price:</strong> ${{ $p.Price }}</p>
           </div>
           <div class="card-footer">
+            <a href="/products/{{ .Id }}" class="action-link edit-link">View</a>
             <a href="/products/{{ $p.Id }}/edit" class="edit-link">Edit</a>
             <a href="#" class="delete-link" onclick="deleteProduct({{ $p.Id }}, '{{ $p.Name }}')">Delete</a>
             <form id="delete-product-form-{{ $p.Id }}" action="/products/{{ $p.Id }}" method="post" style="display: none;">
