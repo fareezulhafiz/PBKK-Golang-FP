@@ -3,7 +3,6 @@ package main
 import (
     "net/http"
     "strconv"
-    "fmt"
 )
 
 type Category struct {
@@ -14,7 +13,7 @@ type Category struct {
 func (Category) tableName() string {
     return "categories"
 }
-func (c *Category) parseForm(r *http.Request) bool {
+func (c Category) parseForm(r *http.Request) bool {
     if c.Name = r.FormValue("name"); len(c.Name) < 3 || len(c.Name) > 255 {
         return false
     }
@@ -32,7 +31,7 @@ type Product struct {
 func (Product) tableName() string {
     return "products"
 }
-func (p *Product) parseForm(r *http.Request) bool {
+func (p Product) parseForm(r *http.Request) bool {
     var err error
 
     if p.Category, err = strconv.Atoi(r.FormValue("category")); err != nil {
