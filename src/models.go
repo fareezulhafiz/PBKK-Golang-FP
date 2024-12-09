@@ -1,8 +1,9 @@
 package main
 
 import (
-    "net/http"
     "strconv"
+
+    "github.com/gin-gonic/gin"
 )
 
 type Category struct {
@@ -14,20 +15,21 @@ func (Category) tableName() string {
     return "categories"
 }
 func (Category) migrate() {
-    db_create(&Category{}, []string{
+    db_create(Category{}, []string{
         "id serial PRIMARY KEY",
         "name varchar(255) NOT NULL",
         "description text NOT NULL"})
 }
 func (Category) drop() {
-    db_drop(&Category{})
+    db_drop(Category{})
 }
-func (c *Category) parseForm(r *http.Request) bool {
-    if c.Name = r.FormValue("name"); len(c.Name) < 3 || len(c.Name) > 255 {
-        return false
+func (m Category) validate(c *gin.Context) any {
+    if m.Name = c.PostForm("name"); len(m.Name) < 3 {
+        return nil
     }
-    c.Description = r.FormValue("description")
-    return true
+    m.Description = c.PostForm("description")
+    m.Id = 1
+    return &m
 }
 
 type Product struct {
@@ -41,7 +43,7 @@ func (Product) tableName() string {
     return "products"
 }
 func (Product) migrate() {
-    db_create(&Product{}, []string{
+    db_create(Product{}, []string{
         "id serial PRIMARY KEY",
         "category int NOT NULL REFERENCES " + Category{}.tableName() + "(id)",
         "name varchar(255) NOT NULL",
@@ -49,20 +51,20 @@ func (Product) migrate() {
         "description text NOT NULL"})
 }
 func (Product) drop() {
-    db_drop(&Product{})
+    db_drop(Product{})
 }
-func (p *Product) parseForm(r *http.Request) bool {
+func (m Product) validate(c *gin.Context) any {
     var err error
 
-    if p.Category, err = strconv.Atoi(r.FormValue("category")); err != nil {
-        return false
+    if m.Category, err = strconv.Atoi(c.PostForm("category")); err != nil {
+        return nil
     }
-    if p.Name = r.FormValue("name"); len(p.Name) < 3 || len(p.Name) > 255 {
-        return false
+    if m.Name = c.PostForm("name"); len(m.Name) < 3 || len(m.Name) > 255 {
+        return nil
     }
-    if p.Price, err = strconv.Atoi(r.FormValue("price")); err != nil {
-        return false
+    if m.Price, err = strconv.Atoi(c.PostForm("price")); err != nil {
+        return nil
     }
-    p.Description = r.FormValue("description")
-    return true
+    m.Description = c.PostForm("description")
+    return &m
 }

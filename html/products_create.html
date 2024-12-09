@@ -144,34 +144,22 @@
     <form action="/products" method="post">
       <label for="category">Category</label>
       <div class="select-container">
-        <select name="category" id="category">
-          {{ range $c := .Category }}
-            <option value="{{ $c.Id }}"
-              {{ if $c.Id == .Old.Category }}
-                selected
-              {{ end }}
-            >{{ $c.Name }}</option>
+        <select name="category" id="category" required>
+          {{ range $c := .cs }}
+            <option value="{{ $c.Id }}">{{ $c.Name }}</option>
           {{ end }}
         </select>
         <button type="button" class="create-category-button" onclick="window.location.href='/categories/create'">Create Category</button>
       </div>
 
       <label for="name">Name</label>
-      <input value="{{ .Old.Name }}" type="text" placeholder="Name" name="name" id="name">
-      {{ with .Errors.Name }}
-        <p class="error">{{ . }}</p>
-      {{ end }}
+      <input type="text" placeholder="Name" name="name" id="name" required>
 
       <label for="price">Price</label>
-      <input value="{{ .Old.Price }}" type="text" placeholder="Price" name="price" id="price">
-      {{ with .Errors.Price }}
-        <p class="error">{{ . }}</p>
-      {{ end }}
+      <input type="text" placeholder="Price" name="price" id="price" required>
 
       <label for="description">Description</label>
-      <textarea placeholder="Description" name="description" id="description" cols="30" rows="5">{{ .Old.Description }}</textarea>
-
-      <input type="hidden" name="_method" value="POST">
+      <textarea placeholder="Description" name="description" id="description" cols="30" rows="5"></textarea>
       <div class="button-container">
         <a href="/products" class="back-button btn-back">Back</a>
         <button type="submit" class="submit-button">Submit</button>

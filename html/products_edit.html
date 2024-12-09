@@ -141,15 +141,16 @@
     <div class="header">
       <h3>Edit Product</h3>
     </div>
-    <form action="/products/{{ .Id }}" method="post">
+    <form action="/products/{{ .m.Id }}" method="post">
       <label for="category">Category</label>
       <div class="select-container">
-        <select name="category" id="category">
-          {{ range $c := .Category }}
+        <select name="category" id="category" required>
+          {{ $m := .m }}
+          {{ range $c := .cs }}
             <option value="{{ $c.Id }}"
-              {{ if $c.Id == .Old.Category }}
-                selected
-              {{ end }}
+            {{ if eq $c.Id $m.Category }}
+              selected
+            {{ end }}
             >{{ $c.Name }}</option>
           {{ end }}
         </select>
@@ -157,21 +158,14 @@
       </div>
 
       <label for="name">Name</label>
-      <input value="{{ .Old.Name }}" type="text" placeholder="Name" name="name" id="name">
-      {{ with .Errors.Name }}
-        <p class="error">{{ . }}</p>
-      {{ end }}
+      <input value="{{ .m.Name }}" type="text" placeholder="Name" name="name" id="name" required>
 
       <label for="price">Price</label>
-      <input value="{{ .Old.Price }}" type="text" placeholder="Price" name="price" id="price">
-      {{ with .Errors.Price }}
-        <p class="error">{{ . }}</p>
-      {{ end }}
+      <input value="{{ .m.Price }}" type="text" placeholder="Price" name="price" id="price" required>
 
       <label for="description">Description</label>
-      <textarea placeholder="Description" name="description" id="description" cols="30" rows="5">{{ .Old.Description }}</textarea>
+      <textarea placeholder="Description" name="description" id="description" cols="30" rows="5">{{ .m.Description }}</textarea>
 
-      <input type="hidden" name="_method" value="PUT">
       <div class="button-container">
         <a href="/products" class="back-button btn-back">Back</a>
         <button type="submit" class="submit-button">Submit</button>

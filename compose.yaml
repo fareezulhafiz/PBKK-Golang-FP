@@ -26,7 +26,7 @@ services:
       watch:
         - action: rebuild
           path: src/
-        - action: sync
+        - action: sync+restart
           path: html/
           target: /html
 

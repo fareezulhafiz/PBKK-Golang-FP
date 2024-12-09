@@ -114,17 +114,12 @@
       <h3>Edit Category</h3>
     </header>
 
-    <form action="/categories/{{ $category->id }}" method="post">
-      <input type="hidden" name="_method" value="PUT">
+    <form action="/categories/{{ .m.Id }}" method="post">
       <label for="name">Name</label>
-      <input value="{{ .Old.Name }}" type="text" placeholder="Name" name="name" id="name" required>
-
-      {{ with .Errors.Name }}
-        <p class="error">{{ . }}</p>
-      {{ end }}
+      <input value="{{ .m.Name }}" type="text" placeholder="Name" name="name" id="name" required>
 
       <label for="description">Description</label>
-      <textarea placeholder="Description" name="description" id="description" cols="30" rows="5">{{ .Old.Description }}</textarea>
+      <textarea placeholder="Description" name="description" id="description" cols="30" rows="5">{{ .m.Description }}</textarea>
 
       <div class="button-container">
         <button type="button" class="back-button" onclick="window.location.href='/categories'">Back</button>

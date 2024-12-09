@@ -2,17 +2,18 @@ package main
 
 import (
     "log"
-    "net/http"
+
+    "github.com/gin-gonic/gin"
 )
 
 func main() {
-    http.HandleFunc("/", route)
+    r := gin.Default()
 
+    route(r)
     if err := db_connect(); err != nil {
         log.Fatal(err)
     }
     migrations_up()
-    if err := http.ListenAndServe(":3000", nil); err != nil {
-        log.Fatal(err)
-    }
+    r.LoadHTMLGlob("html/*")
+    r.Run(":3000")
 }

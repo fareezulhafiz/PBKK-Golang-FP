@@ -1,146 +1,138 @@
 package main
 
 import (
-    "html/template"
     "net/http"
+
+    "github.com/gin-gonic/gin"
 )
 
-func get_param(r *http.Request, i int) string {
-    return r.Context().Value(URLParam{}).([]string)[i]
+func product_index(c *gin.Context) {
+    c.HTML(http.StatusOK, Product{}.tableName() + "_list.html", gin.H{
+        "ps": db_get(Product{}),
+        "cs": append([]Category{{}}, db_get(Category{})...),
+    })
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
-    http.Redirect(w, r, "/products", http.StatusSeeOther)
-}
+func product_view(c *gin.Context) {
+    m := db_get_by(Product{}, "id", c.Param("id"))
 
-
-// TODO form error + success
-func generic_index(w http.ResponseWriter, t Model, s any) {
-    tmpl, err := template.ParseFiles("html/" + t.tableName() + "/list.html")
-
-    if err != nil {
-        http.Error(w, "500 internal server error",
-            http.StatusInternalServerError)
-        return
-    }
-    tmpl.Execute(w, s)
-}
-
-func category_index(w http.ResponseWriter, _ *http.Request) {
-    generic_index(w, &Category{}, db_get(&Category{}))
-}
-
-func product_index(w http.ResponseWriter, _ *http.Request) {
-    generic_index(w, &Product{}, struct {
-        Products []*Product
-        Categories []*Category
-    } {db_get(&Product{}), append([]*Category{{}}, db_get(&Category{})...)})
-}
-
-
-func generic_edit[T Model](w http.ResponseWriter, r *http.Request, t T) {
-    t = db_get_by_id(t, get_param(r, 0))
-    tmpl, err := template.ParseFiles("html/" + t.tableName() + "/edit.html")
-    if err != nil {
-        http.Error(w, "500 internal server error",
-            http.StatusInternalServerError)
-        return
-    }
-    tmpl.Execute(w, t)
-}
-
-func category_edit(w http.ResponseWriter, r *http.Request) {
-    generic_edit(w, r, &Category{})
-}
-
-func product_edit(w http.ResponseWriter, r *http.Request) {
-    generic_edit(w, r, &Product{})
-}
-
-
-func generic_create(w http.ResponseWriter, r *http.Request, t Model) {
-    old := r.PostForm
-
-    tmpl, err := template.ParseFiles("html/" + t.tableName() + "/create.html")
-    if err != nil {
-        http.Error(w, "500 internal server error",
-            http.StatusInternalServerError)
-        return
-    }
-    tmpl.Execute(w, old)
-}
-
-func category_create(w http.ResponseWriter, r *http.Request) {
-    generic_create(w, r, &Category{})
-}
-
-func product_create(w http.ResponseWriter, r *http.Request) {
-    generic_create(w, r, &Product{})
-}
-
-
-func generic_store[T Model](w http.ResponseWriter, r *http.Request, t T) {
-    r.ParseForm()
-    if t.parseForm(r) {
-        db_store(t)
-        http.Redirect(w, r, "/" + t.tableName(), http.StatusSeeOther)
+    if (m.Id == 0) {
+        c.JSON(http.StatusNotFound, gin.H{"error": "404 page not found"})
+    } else {
+        c.HTML(http.StatusOK, m.tableName() + "_view.html", gin.H{
+            "m": m,
+            "cs": append([]Category{{}}, db_get(Category{})...),
+        })
     }
 }
 
-func category_store(w http.ResponseWriter, r *http.Request) {
-    generic_store(w, r, &Category{})
-}
+func product_edit(c *gin.Context) {
+    m := db_get_by(Product{}, "id", c.Param("id"))
 
-func product_store(w http.ResponseWriter, r *http.Request) {
-    generic_store(w, r, &Product{})
-}
-
-
-func generic_update(w http.ResponseWriter, r *http.Request, t Model) {
-    r.ParseForm()
-    if t.parseForm(r) {
-        db_update(t, get_param(r, 0))
-        http.Redirect(w, r, "/" + t.tableName(), http.StatusSeeOther)
+    if (m.Id == 0) {
+        c.JSON(http.StatusNotFound, gin.H{"error": "404 page not found"})
+    } else {
+        c.HTML(http.StatusOK, m.tableName() + "_edit.html", gin.H{
+            "m": m,
+            "cs": db_get(Category{}),
+        })
     }
 }
 
-func category_update(w http.ResponseWriter, r *http.Request) {
-    generic_update(w, r, &Category{})
+func product_create(c *gin.Context) {
+    c.HTML(http.StatusOK, Product{}.tableName() + "_create.html", gin.H{
+        "m": Product{},
+        "cs": db_get(Category{}),
+    })
 }
 
-func product_update(w http.ResponseWriter, r *http.Request) {
-    generic_update(w, r, &Product{})
-}
+func product_store(c *gin.Context) {
+    m := Product{}.validate(c)
 
-func generic_delete(w http.ResponseWriter, r *http.Request, t Model) {
-    db_delete(t, get_param(r, 0))
-    http.Redirect(w, r, "/" + t.tableName(), http.StatusSeeOther)
-}
-
-func category_delete(w http.ResponseWriter, r *http.Request) {
-    generic_delete(w, r, &Category{})
-}
-
-func product_delete(w http.ResponseWriter, r *http.Request) {
-    generic_delete(w, r, &Product{})
-}
-
-
-func generic_view[T Model](w http.ResponseWriter, r *http.Request, t T) {
-    t = db_get_by_id(t, get_param(r, 0))
-    tmpl, err := template.ParseFiles("html/" + t.tableName() + "/view.html")
-    if err != nil {
-        http.Error(w, "500 internal server error",
-            http.StatusInternalServerError)
-        return
+    if m != nil {
+        db_store(*m.(*Product))
+        c.Redirect(http.StatusFound, "/products")
+    } else {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "form error"})
     }
-    tmpl.Execute(w, t)
 }
 
-func category_view(w http.ResponseWriter, r *http.Request) {
-    generic_view(w, r, &Category{})
+func product_update(c *gin.Context) {
+    m := Product{}.validate(c)
+
+    if m != nil {
+        db_update(*m.(*Product), c.Param("id"))
+        c.Redirect(http.StatusFound, "/products")
+    } else {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "form error"})
+    }
 }
 
-func product_view(w http.ResponseWriter, r *http.Request) {
-    generic_view(w, r, &Product{})
+func product_delete(c *gin.Context) {
+    db_delete(Product{}, "id", c.Param("id"))
+    c.Status(http.StatusNoContent)
+}
+
+func category_index(c *gin.Context) {
+    c.HTML(200, Category{}.tableName() + "_list.html", gin.H{
+        "cs": db_get(Category{}),
+    })
+}
+
+func category_view(c *gin.Context) {
+    m := db_get_by(Category{}, "id", c.Param("id"))
+
+    if (m.Id == 0) {
+        c.JSON(http.StatusNotFound, gin.H{"error": "404 page not found"})
+    } else {
+        c.HTML(200, m.tableName() + "_view.html", gin.H{
+            "m": m,
+        })
+    }
+}
+
+func category_edit(c *gin.Context) {
+    m := db_get_by(Category{}, "id", c.Param("id"))
+
+    if (m.Id == 0) {
+        c.JSON(http.StatusNotFound, gin.H{"error": "404 page not found"})
+    } else {
+        c.HTML(200, m.tableName() + "_edit.html", gin.H{
+            "m": m,
+        })
+    }
+}
+
+func category_create(c *gin.Context) {
+    c.HTML(200, Category{}.tableName() + "_create.html", gin.H{
+        "m": Category{},
+    })
+}
+
+func category_store(c *gin.Context) {
+    m := Category{}.validate(c)
+
+    if m != nil {
+        db_store(*m.(*Category))
+        c.Redirect(http.StatusFound, "/categories")
+    } else {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "form error"})
+    }
+}
+
+func category_update(c *gin.Context) {
+    m := Category{}.validate(c)
+
+    if m != nil {
+        db_update(*m.(*Category), c.Param("id"))
+        c.Redirect(http.StatusFound, "/categories")
+    } else {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "form error"})
+    }
+}
+
+func category_delete(c *gin.Context) {
+    db_delete(Product{}, "category", c.Param("id"))
+    db_delete(Category{}, "id", c.Param("id"))
+    c.Status(http.StatusNoContent)
 }

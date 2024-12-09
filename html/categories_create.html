@@ -116,14 +116,10 @@
 
     <form action="/categories" method="post">
       <label for="name">Name</label>
-      <input value="{{ .name }}" type="text" placeholder="Category Name" name="name" id="name" required>
-
-      {{ with .Errors.Name }}
-        <p class="error">{{ . }}</p>
-      {{ end }}
+      <input type="text" placeholder="Category Name" name="name" id="name" required>
 
       <label for="description">Description</label>
-      <textarea placeholder="Category Description" name="description" id="description" cols="30" rows="5">{{ .description }}</textarea>
+      <textarea placeholder="Category Description" name="description" id="description" cols="30" rows="5"></textarea>
 
       <div class="button-container">
         <button type="button" class="back-button" onclick="window.location.href='/categories'">Back</button>
