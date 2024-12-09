@@ -16,27 +16,26 @@ type Route struct {
 type URLParam struct{}
 
 var routes = []Route{
-    {"GET",    regexp.MustCompile("^/$"), index},
+    {"GET", regexp.MustCompile("^/$"), index},
 
-    {"GET",    regexp.MustCompile("^/categories/?$"), category_index},
-    {"GET",    regexp.MustCompile("^/categories/([0-9]+)/edit/?$"), category_edit},
-    {"GET",    regexp.MustCompile("^/categories/create/?$"), category_create},
-    {"POST",   regexp.MustCompile("^/categories/?$"), category_store},
-    {"PUT",    regexp.MustCompile("^/categories/([0-9]+)/?$"), category_update},
-    {"GET",    regexp.MustCompile("^/categories/([0-9]+)/?$"), category_view},
+    {"GET", regexp.MustCompile("^/categories/?$"), category_index},
+    {"GET", regexp.MustCompile("^/categories/([0-9]+)/edit/?$"), category_edit},
+    {"GET", regexp.MustCompile("^/categories/create/?$"), category_create},
+    {"POST", regexp.MustCompile("^/categories/?$"), category_store},
+    {"GET", regexp.MustCompile("^/categories/([0-9]+)/?$"), category_view},
+    {"PUT", regexp.MustCompile("^/categories/([0-9]+)/?$"), category_update},
     {"DELETE", regexp.MustCompile("^/categories/([0-9]+)/?$"), category_delete},
-    
 
     {"GET",    regexp.MustCompile("^/products/?$"), product_index},
     {"GET",    regexp.MustCompile("^/products/([0-9]+)/edit/?$"), product_edit},
     {"GET",    regexp.MustCompile("^/products/create/?$"), product_create},
     {"POST",   regexp.MustCompile("^/products/?$"), product_store},
-    {"PUT",    regexp.MustCompile("^/products/([0-9]+)/?$"), product_update},
     {"GET",    regexp.MustCompile("^/products/([0-9]+)/?$"), product_view},
+    {"PUT",    regexp.MustCompile("^/products/([0-9]+)/?$"), product_update},
     {"DELETE", regexp.MustCompile("^/products/([0-9]+)/?$"), product_delete},
 }
 
-func route(w http.ResponseWriter, r *http.Request) {
+func route(w http.ResponseWriter, r *http.Request) { // TODO method loop
     failed_method := 0
 
     for _, rt := range routes {

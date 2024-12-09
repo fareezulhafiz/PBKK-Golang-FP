@@ -14,15 +14,18 @@ import (
 
 type Model interface {
     tableName() string
+    migrate()
+    drop()
     parseForm(*http.Request) bool
 }
 
 func db_exec(sql string, values ...any) {
     fmt.Println(sql, values)
-    fmt.Println(db.Exec(context.Background(), sql, values...))
+    db.Exec(context.Background(), sql, values...)
 }
 
 var db *pgxpool.Pool
+
 func db_connect() error {
     var err error
 
@@ -45,19 +48,28 @@ func db_create(t Model, args []string) {
 }
 
 func db_drop(t Model) {
-    sql := fmt.Sprintf(`DROP TABLE "$1"`, t.tableName())
+    sql := fmt.Sprintf(`DROP TABLE "%s"`, t.tableName())
 
     db_exec(sql)
 }
 
-func db_get[T Model](t T) []T {
-    sql := fmt.Sprintf(`SELECT * FROM "%s"`, t.tableName())
-    rows, err := db.Query(context.Background(), sql)
+func db_get[T Model](t T) []any {
+    var res []any
+    var err error
+    var rows pgx.Rows
+    var sql string
 
+    sql = fmt.Sprintf(`SELECT * FROM "%s"`, t.tableName())
+    rows, err = db.Query(context.Background(), sql)
     if err != nil {
         return nil
     }
-    res, err := pgx.CollectRows(rows, pgx.RowToStructByName[T])
+    switch reflect.TypeOf(t).String() {
+        case "*Category":
+            res, err = pgx.CollectRows(rows, pgx.RowToStructByName[Category])
+        case "*Product":
+            res, err = pgx.CollectRows(rows, pgx.RowToStructByName[Product])
+    }
     return res
 }
 
@@ -72,7 +84,7 @@ func db_get_by_id[T Model](t T, id string) T {
     return res
 }
 
-func db_store(t Model) {
+func db_store[T Model](t T) {
     v := reflect.ValueOf(t)
     keys := make([]string, v.NumField())
     values := make([]any, v.NumField())
@@ -87,8 +99,8 @@ func db_store(t Model) {
     db_exec(sql, values...)
 }
 
-func db_update(t Model, id string) {
-    //v := reflect.ValueOf(t)
+func db_update[T Model](t T, id string) {
+    //v := reflect.ValueOf(*t).Elem()
     //keys := make([]string, v.NumField())
     //fields := make([]string, v.NumField())
     //values := make([]any, v.NumField() + 1)

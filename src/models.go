@@ -13,7 +13,16 @@ type Category struct {
 func (Category) tableName() string {
     return "categories"
 }
-func (c Category) parseForm(r *http.Request) bool {
+func (Category) migrate() {
+    db_create(&Category{}, []string{
+        "id serial PRIMARY KEY",
+        "name varchar(255) NOT NULL",
+        "description text NOT NULL"})
+}
+func (Category) drop() {
+    db_drop(&Category{})
+}
+func (c *Category) parseForm(r *http.Request) bool {
     if c.Name = r.FormValue("name"); len(c.Name) < 3 || len(c.Name) > 255 {
         return false
     }
@@ -31,7 +40,18 @@ type Product struct {
 func (Product) tableName() string {
     return "products"
 }
-func (p Product) parseForm(r *http.Request) bool {
+func (Product) migrate() {
+    db_create(&Product{}, []string{
+        "id serial PRIMARY KEY",
+        "category int NOT NULL REFERENCES " + Category{}.tableName() + "(id)",
+        "name varchar(255) NOT NULL",
+        "price int NOT NULL",
+        "description text NOT NULL"})
+}
+func (Product) drop() {
+    db_drop(&Product{})
+}
+func (p *Product) parseForm(r *http.Request) bool {
     var err error
 
     if p.Category, err = strconv.Atoi(r.FormValue("category")); err != nil {
@@ -45,36 +65,4 @@ func (p Product) parseForm(r *http.Request) bool {
     }
     p.Description = r.FormValue("description")
     return true
-}
-
-func category_migrate() {
-    db_create(Category{}, []string{
-        "id serial PRIMARY KEY",
-        "name varchar(255) NOT NULL",
-        "description text NOT NULL"})
-}
-
-func category_drop() {
-    db_drop(Category{})
-}
-
-func category_get() []Category {
-    return db_get(Category{})
-}
-
-func product_migrate() {
-    db_create(Product{}, []string{
-        "id serial PRIMARY KEY",
-        "category int NOT NULL REFERENCES " + Category{}.tableName() + "(id)",
-        "name varchar(255) NOT NULL",
-        "price int NOT NULL",
-        "description text NOT NULL"})
-}
-
-func product_drop() {
-    db_drop(Product{})
-}
-
-func product_get() []Product {
-    return db_get(Product{})
 }
