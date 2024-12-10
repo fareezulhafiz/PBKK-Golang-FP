@@ -23,6 +23,12 @@ func (Category) migrate() {
 func (Category) drop() {
     db_drop(Category{})
 }
+func (Category) get(f string, v any) any {
+    return db_get(Category{}, f, v)
+}
+func (Category) get_all() any {
+    return db_get_all(Category{})
+}
 func (m Category) validate(c *gin.Context) any {
     if m.Name = c.PostForm("name"); len(m.Name) < 3 {
         return nil
@@ -33,11 +39,12 @@ func (m Category) validate(c *gin.Context) any {
 }
 
 type Product struct {
-    Id          int
-    Category    int
-    Name        string
-    Price       float64
-    Description string
+    Id           int
+    Category     int
+    CategoryName string `db:"-"`
+    Name         string
+    Price        float64
+    Description  string
 }
 func (Product) tableName() string {
     return "products"
@@ -52,6 +59,28 @@ func (Product) migrate() {
 }
 func (Product) drop() {
     db_drop(Product{})
+}
+func (Product) get(f string, v any) any {
+    p := db_get(Product{}, f, v)
+
+    p.CategoryName = Category{}.get("id", p.Category).(Category).Name
+    return p
+
+
+}
+func (Product) get_all() any {
+    ps := db_get_all(Product{})
+    cs := Category{}.get_all().([]Category)
+
+    for i, p := range ps {
+        for _, c := range cs {
+            if c.Id == p.Category {
+                ps[i].CategoryName = c.Name
+                break
+            }
+        }
+    }
+    return ps
 }
 func (m Product) validate(c *gin.Context) any {
     var err error

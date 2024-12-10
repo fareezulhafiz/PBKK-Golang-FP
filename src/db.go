@@ -16,6 +16,8 @@ type Model interface {
     tableName() string
     migrate()
     drop()
+    get(string, any) any
+    get_all() any
     validate(c *gin.Context) any
 }
 
@@ -53,7 +55,18 @@ func db_drop(m Model) {
     db_exec(sql)
 }
 
-func db_get[T Model](m T) []T {
+func db_get[T Model](m T, f string, v any) T {
+    sql := fmt.Sprintf(`SELECT * FROM "%s" WHERE "%s"=$1`, m.tableName(), f)
+    row, err := db.Query(context.Background(), sql, v)
+
+    if err != nil {
+        return m
+    }
+    res, _ := pgx.CollectOneRow(row, pgx.RowToStructByName[T])
+    return res
+}
+
+func db_get_all[T Model](m T) []T {
     var res []T
     var err error
     var rows pgx.Rows
@@ -65,17 +78,6 @@ func db_get[T Model](m T) []T {
         return nil
     }
     res, _ = pgx.CollectRows(rows, pgx.RowToStructByName[T])
-    return res
-}
-
-func db_get_by[T Model](m T, f string, v string) T {
-    sql := fmt.Sprintf(`SELECT * FROM "%s" WHERE "%s"=$1`, m.tableName(), f)
-    row, err := db.Query(context.Background(), sql, v)
-
-    if err != nil {
-        return m
-    }
-    res, _ := pgx.CollectOneRow(row, pgx.RowToStructByName[T])
     return res
 }
 

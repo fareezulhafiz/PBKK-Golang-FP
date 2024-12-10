@@ -6,43 +6,40 @@ import (
     "github.com/gin-gonic/gin"
 )
 
-func product_index(c *gin.Context) {
+func product_list(c *gin.Context) {
     c.HTML(http.StatusOK, Product{}.tableName() + "_list.html", gin.H{
-        "ps": db_get(Product{}),
-        "cs": append([]Category{{}}, db_get(Category{})...),
+        "ps": Product{}.get_all(),
     })
 }
 
 func product_view(c *gin.Context) {
-    m := db_get_by(Product{}, "id", c.Param("id"))
+    m := Product{}.get("id", c.Param("id")).(Product)
 
     if (m.Id == 0) {
         c.JSON(http.StatusNotFound, gin.H{"error": "404 page not found"})
     } else {
         c.HTML(http.StatusOK, m.tableName() + "_view.html", gin.H{
             "m": m,
-            "cs": append([]Category{{}}, db_get(Category{})...),
         })
     }
 }
 
 func product_edit(c *gin.Context) {
-    m := db_get_by(Product{}, "id", c.Param("id"))
+    m := Product{}.get("id", c.Param("id")).(Product)
 
     if (m.Id == 0) {
         c.JSON(http.StatusNotFound, gin.H{"error": "404 page not found"})
     } else {
         c.HTML(http.StatusOK, m.tableName() + "_edit.html", gin.H{
             "m": m,
-            "cs": db_get(Category{}),
+            "cs": Category{}.get_all().([]Category),
         })
     }
 }
 
 func product_create(c *gin.Context) {
     c.HTML(http.StatusOK, Product{}.tableName() + "_create.html", gin.H{
-        "m": Product{},
-        "cs": db_get(Category{}),
+        "cs": Category{}.get_all().([]Category),
     })
 }
 
@@ -73,14 +70,14 @@ func product_delete(c *gin.Context) {
     c.Status(http.StatusNoContent)
 }
 
-func category_index(c *gin.Context) {
+func category_list(c *gin.Context) {
     c.HTML(200, Category{}.tableName() + "_list.html", gin.H{
-        "cs": db_get(Category{}),
+        "cs": Category{}.get_all().([]Category),
     })
 }
 
 func category_view(c *gin.Context) {
-    m := db_get_by(Category{}, "id", c.Param("id"))
+    m := Category{}.get("id", c.Param("id")).(Category)
 
     if (m.Id == 0) {
         c.JSON(http.StatusNotFound, gin.H{"error": "404 page not found"})
@@ -92,7 +89,7 @@ func category_view(c *gin.Context) {
 }
 
 func category_edit(c *gin.Context) {
-    m := db_get_by(Category{}, "id", c.Param("id"))
+    m := Category{}.get("id", c.Param("id")).(Category)
 
     if (m.Id == 0) {
         c.JSON(http.StatusNotFound, gin.H{"error": "404 page not found"})
@@ -104,9 +101,7 @@ func category_edit(c *gin.Context) {
 }
 
 func category_create(c *gin.Context) {
-    c.HTML(200, Category{}.tableName() + "_create.html", gin.H{
-        "m": Category{},
-    })
+    c.HTML(200, Category{}.tableName() + "_create.html", nil)
 }
 
 func category_store(c *gin.Context) {

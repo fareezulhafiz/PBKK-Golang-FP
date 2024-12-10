@@ -154,7 +154,7 @@
         <div class="card">
           <div class="card-header">{{ $p.Name }}</div>
           <div class="card-content">
-            <p><strong>Category:</strong> {{ with $c := index $cs $p.Category }}{{ $c.Name }}{{ end }}</p>
+            <p><strong>Category:</strong> {{ $p.CategoryName }}</p>
             <p><strong>Price:</strong> ${{ printf "%.2f" $p.Price }}</p>
           </div>
           <div class="card-footer">
