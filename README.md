@@ -24,4 +24,4 @@ optionally a `description`. Every product in a category is linked to the parent
 category, so if this one is modified, every product is also updated. If the
 category is deleted, every subproduct is deleted as well.<br>
 
-You can see a demo of the application on https://youtu.be.
+You can see a demo of the application on [https://youtu.be.](https://youtu.be/qUHR13qM2gM)
