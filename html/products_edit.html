@@ -161,7 +161,7 @@
       <input value="{{ .m.Name }}" type="text" placeholder="Name" name="name" id="name" required>
 
       <label for="price">Price</label>
-      <input value="{{ .m.Price }}" type="text" placeholder="Price" name="price" id="price" required>
+      <input value="{{printf "%.2f" .m.Price}}" type="text" placeholder="Price" name="price" id="price" required>
 
       <label for="description">Description</label>
       <textarea placeholder="Description" name="description" id="description" cols="30" rows="5">{{ .m.Description }}</textarea>
