@@ -11,25 +11,26 @@ type Category struct {
     Name        string
     Description string
 }
-func (Category) tableName() string {
+func (Category) TableName() string {
     return "categories"
 }
-func (Category) migrate() {
-    db_create(Category{}, []string{
+func (Category) Migrate() {
+    DbCreate(Category{}, []string{
         "id serial PRIMARY KEY",
         "name varchar(255) NOT NULL",
-        "description text NOT NULL"})
+        "description text NOT NULL",
+    })
 }
-func (Category) drop() {
-    db_drop(Category{})
+func (Category) Drop() {
+    DbDrop(Category{})
 }
-func (Category) get(f string, v any) any {
-    return db_get(Category{}, f, v)
+func (Category) Get(f string, v any) any {
+    return DbGet(Category{}, f, v)
 }
-func (Category) get_all() any {
-    return db_get_all(Category{})
+func (Category) GetAll() any {
+    return DbGetAll(Category{})
 }
-func (m Category) validate(c *gin.Context) any {
+func (m Category) Validate(c *gin.Context) any {
     if m.Name = c.PostForm("name"); len(m.Name) < 3 {
         return nil
     }
@@ -46,31 +47,30 @@ type Product struct {
     Price        float64
     Description  string
 }
-func (Product) tableName() string {
+func (Product) TableName() string {
     return "products"
 }
-func (Product) migrate() {
-    db_create(Product{}, []string{
+func (Product) Migrate() {
+    DbCreate(Product{}, []string{
         "id serial PRIMARY KEY",
-        "category int NOT NULL REFERENCES " + Category{}.tableName() + "(id)",
+        "category int NOT NULL REFERENCES " + Category{}.TableName() + "(id)",
         "name varchar(255) NOT NULL",
         "price float(32) NOT NULL",
-        "description text NOT NULL"})
+        "description text NOT NULL",
+    })
 }
-func (Product) drop() {
-    db_drop(Product{})
+func (Product) Drop() {
+    DbDrop(Product{})
 }
-func (Product) get(f string, v any) any {
-    p := db_get(Product{}, f, v)
+func (Product) Get(f string, v any) any {
+    p := DbGet(Product{}, f, v)
 
-    p.CategoryName = Category{}.get("id", p.Category).(Category).Name
+    p.CategoryName = Category{}.Get("id", p.Category).(Category).Name
     return p
-
-
 }
-func (Product) get_all() any {
-    ps := db_get_all(Product{})
-    cs := Category{}.get_all().([]Category)
+func (Product) GetAll() any {
+    ps := DbGetAll(Product{})
+    cs := Category{}.GetAll().([]Category)
 
     for i, p := range ps {
         for _, c := range cs {
@@ -82,7 +82,7 @@ func (Product) get_all() any {
     }
     return ps
 }
-func (m Product) validate(c *gin.Context) any {
+func (m Product) Validate(c *gin.Context) any {
     var err error
 
     if m.Category, err = strconv.Atoi(c.PostForm("category")); err != nil {

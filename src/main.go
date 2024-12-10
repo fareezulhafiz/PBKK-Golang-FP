@@ -9,11 +9,11 @@ import (
 func main() {
     r := gin.Default()
 
-    route(r)
-    if err := db_connect(); err != nil {
+    Route(r)
+    if err := DbConnect(); err != nil {
         log.Fatal(err)
     }
-    migrations_up()
+    MigrationsUp()
     r.LoadHTMLGlob("html/*")
     r.Run(":3000")
 }

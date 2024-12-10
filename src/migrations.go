@@ -1,11 +1,11 @@
 package main
 
-func migrations_up() {
-    Category{}.migrate()
-    Product{}.migrate()
+func MigrationsUp() {
+    Category{}.Migrate()
+    Product{}.Migrate()
 }
 
-func migrations_down() {
-    Product{}.drop()
-    Category{}.drop()
+func MigrationsDown() {
+    Product{}.Drop()
+    Category{}.Drop()
 }
