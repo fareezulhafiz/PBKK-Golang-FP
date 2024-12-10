@@ -1,5 +1,9 @@
 # PBKK-Golang-FP
 
+#Group Members
+1) Ange, Simon, Axel, Duhayon (5999241027)
+2) Muhammad Fareezul Hafiz bin Mohd Nasir (5999241099)
+
 ## Quick Start
 ```bash
 go build .
