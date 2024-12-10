@@ -36,7 +36,7 @@ type Product struct {
     Id          int
     Category    int
     Name        string
-    Price       int
+    Price       float64
     Description string
 }
 func (Product) tableName() string {
@@ -47,7 +47,7 @@ func (Product) migrate() {
         "id serial PRIMARY KEY",
         "category int NOT NULL REFERENCES " + Category{}.tableName() + "(id)",
         "name varchar(255) NOT NULL",
-        "price int NOT NULL",
+        "price float(32) NOT NULL",
         "description text NOT NULL"})
 }
 func (Product) drop() {
@@ -62,7 +62,7 @@ func (m Product) validate(c *gin.Context) any {
     if m.Name = c.PostForm("name"); len(m.Name) < 3 || len(m.Name) > 255 {
         return nil
     }
-    if m.Price, err = strconv.Atoi(c.PostForm("price")); err != nil {
+    if m.Price, err = strconv.ParseFloat(c.PostForm("price"), 32); err != nil {
         return nil
     }
     m.Description = c.PostForm("description")

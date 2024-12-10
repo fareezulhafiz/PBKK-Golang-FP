@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS products(
     id          serial       PRIMARY KEY,
     category    int          NOT NULL REFERENCES categories(id),
     name        varchar(255) NOT NULL,
-    price       int          NOT NULL,
+    price       float(32)    NOT NULL,
     description text         NOT NULL
 );
 
