@@ -58,7 +58,9 @@ func DbDrop(m Model) {
 }
 
 func DbGet[T Model](m T, f string, v any) T {
-    sql := fmt.Sprintf(`SELECT * FROM "%s" WHERE "%s"=$1`, m.TableName(), f)
+    sql := fmt.Sprintf(`SELECT * FROM "%s" WHERE "%s"=$1 ORDER BY id`,
+        m.TableName(), f,
+    )
     row, err := db.Query(context.Background(), sql, v)
 
     if err != nil {
@@ -74,7 +76,7 @@ func DbGetAll[T Model](m T) []T {
     var rows pgx.Rows
     var sql string
 
-    sql = fmt.Sprintf(`SELECT * FROM "%s"`, m.TableName())
+    sql = fmt.Sprintf(`SELECT * FROM "%s" ORDER BY id`, m.TableName())
     rows, err = db.Query(context.Background(), sql)
     if err != nil {
         return nil
@@ -102,15 +104,18 @@ func DbStore[T Model](m T) {
 
 func DbUpdate[T Model](m T, id string) {
     v := reflect.ValueOf(m)
-    keys := make([]string, v.NumField() - 1)
-    fields := make([]string, v.NumField() - 1)
-    values := make([]any, v.NumField())
+    var keys []string
+    var fields []string
+    values := []any{id}
+    idx := 2
 
-    values[0] = id
     for i := 1; i < v.NumField(); i++ {
-        keys[i - 1] = fmt.Sprintf("$%v", i + 1)
-        fields[i - 1] = v.Type().Field(i).Name
-        values[i] = fmt.Sprintf("%v", v.Field(i))
+        if v.Type().Field(i).Tag != `db:"-"` {
+            keys = append(keys, fmt.Sprintf("$%v", idx))
+            fields = append(fields, v.Type().Field(i).Name)
+            values = append(values, fmt.Sprintf("%v", v.Field(i)))
+            idx++
+        }
     }
     sql := fmt.Sprintf(`UPDATE "%s" SET (%s) = (%s) WHERE id=$1`,
         m.TableName(), strings.Join(fields, ","), strings.Join(keys, ","),
