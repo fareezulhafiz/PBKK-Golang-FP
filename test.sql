@@ -1,3 +1,6 @@
+DROP TABLE products;
+DROP TABLE categories;
+
 CREATE TABLE IF NOT EXISTS categories(
     id          serial       PRIMARY KEY,
     name        varchar(255) NOT NULL,
@@ -12,9 +15,6 @@ CREATE TABLE IF NOT EXISTS products(
     price       float(32)    NOT NULL,
     description text         NOT NULL
 );
-
-DELETE FROM products;
-DELETE FROM categories;
 
 INSERT INTO categories VALUES (DEFAULT, 'furnitures', 'stuff you put in your house', 'foo');
 INSERT INTO products   VALUES (DEFAULT, 1, 'table', 120, 'thing you put things on');
