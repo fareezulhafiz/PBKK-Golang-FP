@@ -121,6 +121,9 @@
       <label for="description">Description</label>
       <textarea placeholder="Description" name="description" id="description" cols="30" rows="5">{{ .m.Description }}</textarea>
 
+      <label for="type">Type</label>
+      <input value="{{ .m.Type }}" type="text" placeholder="Type" name="type" id="type" required>
+
       <div class="button-container">
         <button type="button" class="back-button" onclick="window.location.href='/categories'">Back</button>
         <button type="submit" class="submit-button">Submit</button>

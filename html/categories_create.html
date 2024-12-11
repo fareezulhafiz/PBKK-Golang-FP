@@ -116,10 +116,13 @@
 
     <form action="/categories" method="post">
       <label for="name">Name</label>
-      <input type="text" placeholder="Category Name" name="name" id="name" required>
+      <input type="text" placeholder="Name" name="name" id="name" required>
 
       <label for="description">Description</label>
-      <textarea placeholder="Category Description" name="description" id="description" cols="30" rows="5"></textarea>
+      <textarea placeholder="Description" name="description" id="description" cols="30" rows="5"></textarea>
+
+      <label for="type">Type</label>
+      <input type="text" placeholder="Type" name="type" id="type" required>
 
       <div class="button-container">
         <button type="button" class="back-button" onclick="window.location.href='/categories'">Back</button>

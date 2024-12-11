@@ -148,11 +148,13 @@
     <table>
       <tr>
         <th>Name</th>
+        <th>Type</th>
         <th>Action</th>
       </tr>
       {{ range $c := .cs }}
         <tr>
           <td>{{ $c.Name }}</td>
+          <td>{{ $c.Type }}</td>
           <td>
             <a href="/categories/{{ $c.Id }}" class="action-link edit-link">View</a>
             <a href="/categories/{{ $c.Id }}/edit" class="action-link edit-link">Edit</a>

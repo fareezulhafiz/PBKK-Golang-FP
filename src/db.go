@@ -87,14 +87,18 @@ func DbGetAll[T Model](m T) []T {
 
 func DbStore[T Model](m T) {
     v := reflect.ValueOf(m)
-    keys := make([]string, v.NumField() - 1)
-    fields := make([]string, v.NumField() - 1)
-    values := make([]any, v.NumField() - 1)
+    var keys []string
+    var fields []string
+    values := []any{}
+    idx := 0
 
     for i := 1; i < v.NumField(); i++ {
-        keys[i - 1] = fmt.Sprintf("$%v", i)
-        fields[i - 1] = v.Type().Field(i).Name
-        values[i - 1] = fmt.Sprintf("%v", v.Field(i))
+        if v.Type().Field(i).Tag != `db:"-"` {
+            keys = append(keys, fmt.Sprintf("$%v", idx + 1))
+            fields = append(fields, v.Type().Field(i).Name)
+            values = append(values, fmt.Sprintf("%v", v.Field(i)))
+            idx++
+        }
     }
     sql := fmt.Sprintf(`INSERT INTO "%s" (%s) VALUES (%s)`,
         m.TableName(), strings.Join(fields, ","), strings.Join(keys, ","),

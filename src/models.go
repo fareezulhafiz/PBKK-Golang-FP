@@ -10,6 +10,7 @@ type Category struct {
     Id          int
     Name        string
     Description string
+    Type        string
 }
 func (Category) TableName() string {
     return "categories"
@@ -19,6 +20,7 @@ func (Category) Migrate() {
         "id serial PRIMARY KEY",
         "name varchar(255) NOT NULL",
         "description text NOT NULL",
+        "type varchar(255) NOT NULL",
     })
 }
 func (Category) Drop() {
@@ -32,6 +34,9 @@ func (Category) GetAll() any {
 }
 func (m Category) Validate(c *gin.Context) any {
     if m.Name = c.PostForm("name"); len(m.Name) < 3 {
+        return nil
+    }
+    if m.Type = c.PostForm("type"); len(m.Type) < 1 {
         return nil
     }
     m.Description = c.PostForm("description")
