@@ -18,7 +18,7 @@ type Model interface {
     Drop()
     Get(string, any) any
     GetAll() any
-    Validate(c *gin.Context) any
+    Validate(*gin.Context) any
 }
 
 var db *pgxpool.Pool

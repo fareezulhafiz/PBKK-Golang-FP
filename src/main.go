@@ -13,7 +13,6 @@ func main() {
     if err := DbConnect(); err != nil {
         log.Fatal(err)
     }
-    MigrationsUp()
     r.LoadHTMLGlob("html/*")
     r.Run(":3000")
 }
